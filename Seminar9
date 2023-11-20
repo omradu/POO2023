@@ -1,0 +1,441 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+enum gen { POLITIST, ROMANTIC, HORROR, FANTASTIC, FICTIUNE };
+
+
+class Book
+{
+	const string ISBN;
+	string title;
+	string author;
+	int totalPages;
+	int chapters;
+	int* pagesPerChapter;
+
+	static int books;
+
+public:
+	Book() : ISBN("12345")
+	{
+		this->title = "";
+		this->author = "";
+		this->totalPages = 0;
+		this->chapters = 0;
+		this->pagesPerChapter = nullptr;
+
+		books++;
+	}
+
+	Book(string ISBN, string title, string author, int totalPages, int chapters, int* pagesPerChapter) : ISBN(ISBN)
+	{
+		this->title = title;
+		this->author = author;
+		this->totalPages = totalPages;
+		this->chapters = chapters;
+		if (pagesPerChapter != nullptr)
+		{
+			this->pagesPerChapter = new int[chapters];
+			for (int i = 0; i < chapters; i++)
+			{
+				this->pagesPerChapter[i] = pagesPerChapter[i];
+			}
+		}
+		else
+		{
+			this->pagesPerChapter = nullptr;
+		}
+
+		books++;
+	}
+
+	Book(const Book& b) : ISBN(b.ISBN)
+	{
+		this->title = b.title;
+		this->author = b.author;
+		this->totalPages = b.totalPages;
+		this->chapters = b.chapters;
+		if (b.pagesPerChapter != nullptr)
+		{
+			this->pagesPerChapter = new int[this->chapters];
+			for (int i = 0; i < this->chapters; i++)
+			{
+				this->pagesPerChapter[i] = b.pagesPerChapter[i];
+			}
+		}
+
+		books++;
+	}
+
+	~Book()
+	{
+		if (this->pagesPerChapter != nullptr)
+		{
+			delete[] this->pagesPerChapter;
+		}
+	}
+
+	static void doSomenthing()
+	{
+		cout << "Did something at class level\n";
+	}
+
+	//Getters
+	string getISBN()
+	{
+		return this->ISBN;
+	}
+
+	string getTitle()
+	{
+		return this->title;
+	}
+
+	int getTotalPages()
+	{
+		return this->totalPages;
+	}
+
+	int getChapters()
+	{
+		return this->chapters;
+	}
+
+	int* getPagesPerChapter()
+	{
+		int* copy;
+		if (this->pagesPerChapter != nullptr)
+		{
+			copy = new int[this->chapters];
+			for (int i = 0; i < this->chapters; i++)
+			{
+				copy[i] = this->pagesPerChapter[i];
+			}
+		}
+		else
+		{
+			copy = nullptr;
+		}
+
+		return copy;
+	}
+
+	static int getBooksNumber()
+	{
+		return books;
+	}
+
+	//Setters
+	void setTitle(string title)
+	{
+		this->title = title;
+	}
+
+	void setAuthor(string author)
+	{
+		this->author = author;
+	}
+
+	void setTotalPages(int totalPages)
+	{
+		this->totalPages = totalPages;
+	}
+
+	void setChapters(int chapters)
+	{
+		this->chapters = chapters;
+	}
+
+	void setPagerPerChapter(int* pagesPerChapter)
+	{
+		if (this->pagesPerChapter != nullptr)
+		{
+			delete[] this->pagesPerChapter;
+		}
+
+		if (pagesPerChapter != nullptr)
+		{
+			this->pagesPerChapter = new int[this->chapters];
+			for (int i = 0; i < this->chapters; i++)
+			{
+				this->pagesPerChapter[i] = pagesPerChapter[i];
+			}
+		}
+		else
+		{
+			this->pagesPerChapter = nullptr;
+		}
+	}
+
+	void setBooksNumber(int booksNb)
+	{
+		Book::books = booksNb;
+	}
+
+	//overloading of operator =
+	Book& operator=(const Book& b)
+	{
+		if (this != &b)
+		{
+			this->title = b.title;
+			this->author = b.author;
+			this->totalPages = b.totalPages;
+			this->chapters = b.chapters;
+			if (this->pagesPerChapter != nullptr)
+			{
+				delete[] this->pagesPerChapter;
+			}
+
+			if (b.pagesPerChapter != nullptr)
+			{
+				this->pagesPerChapter = new int[b.chapters];
+				for (int i = 0; i < this->chapters; i++)
+				{
+					this->pagesPerChapter[i] = b.pagesPerChapter[i];
+				}
+			}
+			else
+			{
+				this->pagesPerChapter = nullptr;
+			}
+		}
+
+		return *this;
+	}
+
+	//a method that prints the content of the book
+	void showBook()
+	{
+		cout << "Book " << this->title << " by " << this->author << " has ISBN: " << this->ISBN << " and " << this->totalPages << " pages with " << this->chapters << " chapters\n";
+		if (this->pagesPerChapter != nullptr)
+		{
+			for (int i = 0; i < this->chapters; i++)
+			{
+				cout << "Chapter " << i << " has " << this->pagesPerChapter[i] << " pages\n";
+			}
+		}
+	}
+
+
+	//operator ! overloading
+	bool operator!()
+	{
+		/*if (this->totalPages > 200)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}*/
+
+		return this->totalPages > 200;
+	}
+
+	//pre-incrementaation ++book
+	Book& operator++()
+	{
+		this->totalPages++;
+
+		return *this;
+	}
+
+	//post-incrementation book++
+	Book operator++(int i)
+	{
+		Book copy = *this;
+		this->totalPages++;
+
+		return copy;
+	}
+
+
+	//predecrementation --book
+	Book& operator--()
+	{
+		if (this->pagesPerChapter != nullptr)
+		{
+			if (this->chapters >= 2)
+			{
+				this->pagesPerChapter[1]--;
+			}
+		}
+
+		return *this;
+	}
+
+	//postdecrement book--
+	Book operator--(int i)
+	{
+		Book copy = *this;
+		if (this->pagesPerChapter != nullptr)
+		{
+			if (this->chapters >= 2)
+			{
+				this->pagesPerChapter[1]--;
+			}
+		}
+
+		return copy;
+	}
+
+	//overload of operator + through member function
+	Book operator+(Book b)
+	{
+		Book copy = *this;	//we need to do a copy because we don't modify the operands, the result will be something modified
+		copy.totalPages = this->totalPages + b.totalPages;
+		return copy;
+	}
+
+	//overload of operator + through global function | we can't have both
+	//friend Book operator+(Book, Book);
+
+	//overload of operator + with an int
+	//Book + x
+	Book operator+(int x)
+	{
+		Book copy = *this;
+		copy.totalPages = this->totalPages + x;
+
+		return copy;
+	}
+
+	friend Book operator+(int x, Book b);
+
+	//operator -  Book - Book
+	Book operator-(Book b)
+	{
+		Book copy = *this;
+		if (copy.totalPages > b.totalPages)
+		{
+			copy.totalPages = this->totalPages - b.totalPages;
+		}
+
+		return copy;
+	}
+
+	//operator -  Book - int
+	Book operator-(int x)
+	{
+		Book copy = *this;
+		if (copy.pagesPerChapter != nullptr)
+		{
+			if (copy.chapters >= 3)
+			{
+				if (copy.pagesPerChapter[2] > x)
+				{
+					copy.pagesPerChapter[2] = this->pagesPerChapter[2] - x;
+				}
+			}
+		}
+
+		return copy;
+	}
+
+	friend Book operator-(int, Book);
+
+};
+
+
+Book operator-(int x, Book b)
+{
+	if (b.pagesPerChapter != nullptr)
+	{
+		if (b.chapters >= 3)
+		{
+			if (x > b.pagesPerChapter[2])
+			{
+				b.pagesPerChapter[2] = x - b.pagesPerChapter[2];
+			}
+		}
+	}
+
+	return b;
+}
+
+//overload of operator + through global function
+//Book operator+(Book b1, Book b2)
+//{
+//	b1.totalPages += b2.totalPages; //we are actually modifying a copy, not the operands
+//	return b1;
+//}
+
+Book operator+(int x, Book  b)
+{
+	b.totalPages += x; //we are actually working with a copy so we can modify the value
+
+	return b;
+}
+
+int Book::books = 0;
+
+int main()
+{
+	int c[]{ 120,170,147,210,100 }, c1[]{ 20,30,50 };
+
+	Book b1("ISBN-1234-567-8910", "Singur pe lume", "Victor Hugo", 500, 5, c);
+	Book b2 = b1;
+	Book b3("ISBN-9876-543-2100", "Schite", "I. L. Caragiale", 100, 3, c1);
+	b1.showBook();
+	b2.showBook();
+	b3.showBook();
+	cout << '\n';
+
+	b2 = b3;
+	b1.showBook();
+	b2.showBook();
+	b3.showBook();
+
+	cout << !b1 << '\n';	//overload operator ! 
+	cout << !b2 << '\n';
+
+	if (!b3 == 1)
+	{
+		cout << "Greater than 200";
+	}
+	else
+	{
+		cout << "Lower than 200";
+	}
+
+	Book b4 = ++b2;  //preincrement operator  (without parameter)
+	cout << "b4: " << b4.getTotalPages() << "  b2: " << b2.getTotalPages() << '\n';
+
+	Book b5 = b2++;  //postincrement operator (with parameter)
+	cout << "b5: " << b5.getTotalPages() << "  b2: " << b2.getTotalPages() << '\n';
+
+	b3 = b2++;
+	cout << "b3: " << b3.getTotalPages() << "  b2: " << b2.getTotalPages() << '\n';
+
+	Book b6 = b1 + b5;  //operator + (for Book+Book)
+	cout << b6.getTotalPages() << '\n';
+
+	Book b7 = b5 + 10;   //operator + (for Book+int)
+	cout << b7.getTotalPages() << '\n';
+
+	b7 = 5 + b7;		//operator + (for int+Book)
+	cout << b7.getTotalPages() << '\n';
+
+	Book b8 = b2--;
+	b8.showBook();
+	b2.showBook();
+	cout << "-----------------\n";
+
+	Book b9 = --b2;
+	b9.showBook();
+	b2.showBook();
+	cout << "-----------------\n";
+
+
+	b9 = b8 - 5;
+	b8.showBook();
+	b9.showBook();
+	cout << "-----------------\n";
+
+	b9 = 75 - b8;
+	b8.showBook();
+	b9.showBook();
+	cout << "-----------------\n";
+
+}
