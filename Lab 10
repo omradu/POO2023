@@ -1,0 +1,272 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Appliance
+{
+	const string ID;
+	string name;
+	string manufacturer;
+	float price;
+	int nbMonthsInShop;
+	float* pricePerMonth;
+
+	static int salePercentage;
+
+public:
+	Appliance() : ID("12345ABC")
+	{
+		this->name = "";
+		this->manufacturer = "";
+		this->price = 0;
+		this->nbMonthsInShop = 0;
+		this->pricePerMonth = nullptr;
+	}
+
+	Appliance(string ID, string name, string manufacturer, float price, int nbMonthsInShop, float* pricePerMonth) : ID(ID)
+	{
+		this->name = name;
+		this->manufacturer = manufacturer;
+		this->price = price;
+		this->nbMonthsInShop = nbMonthsInShop;
+		if (pricePerMonth != nullptr)
+		{
+			this->pricePerMonth = new float[this->nbMonthsInShop];
+			for (int i = 0; i < this->nbMonthsInShop; i++)
+			{
+				this->pricePerMonth[i] = pricePerMonth[i];
+			}
+		}
+		else
+		{
+			this->pricePerMonth = nullptr;
+		}
+	}
+
+	Appliance(const Appliance& a) : ID(a.ID)
+	{
+		this->name = a.name;
+		this->manufacturer = a.manufacturer;
+		this->price = a.price;
+		this->nbMonthsInShop = a.nbMonthsInShop;
+		if (a.pricePerMonth != nullptr)
+		{
+			this->pricePerMonth = new float[this->nbMonthsInShop];
+			for (int i = 0; i < this->nbMonthsInShop; i++)
+			{
+				this->pricePerMonth[i] = a.pricePerMonth[i];
+			}
+		}
+		else
+		{
+			this->pricePerMonth = nullptr;
+		}
+	}
+
+	~Appliance()
+	{
+		if (this->pricePerMonth != nullptr)
+		{
+			delete[] this->pricePerMonth;
+		}
+	}
+
+	// Getters
+	string getID()
+	{
+		return this->ID;
+	}
+
+	string getName()
+	{
+		return this->name;
+	}
+
+	string getManufacturer()
+	{
+		return this->manufacturer;
+	}
+
+	float getPrice()
+	{
+		return this->price;
+	}
+
+	int getNbMonthsInShop()
+	{
+		return this->nbMonthsInShop;
+	}
+
+	float* getPricePerMonth()
+	{
+		float* copy;
+		if (this->pricePerMonth != nullptr)
+		{
+			copy = new float[this->nbMonthsInShop];
+			for (int i = 0; i < this->nbMonthsInShop; i++)
+			{
+				copy[i] = this->pricePerMonth[i];
+			}
+		}
+		else
+		{
+			copy = nullptr;
+		}
+
+		return copy;
+	}
+
+	static int getSalePercentage()
+	{
+		return salePercentage;
+	}
+
+	//Setters
+	void setName(string name)
+	{
+		this->name = name;
+	}
+
+	void setManufacturer(string manufacturer)
+	{
+		this->manufacturer = manufacturer;
+	}
+
+	void setPrice(float price)
+	{
+		if (price > 0)
+		{
+			this->price = price;
+		}
+	}
+
+	void setNbMonthsInShop(int nbMonths)
+	{
+		this->nbMonthsInShop = nbMonths;
+	}
+
+	void setPricePerMonth(int nbMonths, float* pricePerMonth)
+	{
+		if (this->pricePerMonth != nullptr)
+		{
+			delete[] this->pricePerMonth;
+		}
+
+		this->nbMonthsInShop = nbMonths;
+
+		if (pricePerMonth != nullptr)
+		{
+			
+			this->pricePerMonth = new float[this->nbMonthsInShop];
+			for (int i = 0; i < this->nbMonthsInShop; i++)
+			{
+				this->pricePerMonth[i] = pricePerMonth[i];
+			}
+		}
+		else
+		{
+			this->pricePerMonth = nullptr;
+		}
+	}
+
+	void setSalePercentage(int salePercentage)
+	{
+		Appliance::salePercentage = salePercentage;
+	}
+
+	//supraincarcare operator =
+	Appliance& operator=(const Appliance& a)
+	{
+		if (this != &a)
+		{
+			this->name = a.name;
+			this->manufacturer = a.manufacturer;
+			this->price = a.price;
+			this->nbMonthsInShop = a.nbMonthsInShop;
+			if (this->pricePerMonth != nullptr)
+			{
+				delete[] this->pricePerMonth;
+			}
+			
+			if (a.pricePerMonth != nullptr)
+			{
+				this->pricePerMonth = new float[this->nbMonthsInShop];
+				for (int i = 0; i < this->nbMonthsInShop; i++)
+				{
+					this->pricePerMonth[i] = a.pricePerMonth[i];
+				}
+			}
+			else
+			{
+				this->pricePerMonth = nullptr;
+			}
+		}
+		return *this;
+	}
+
+	//check if price is bigger than 200
+	bool operator!()
+	{
+		return this->price > 200;
+	}
+
+	//pre-incrementation 
+	Appliance& operator++()
+	{
+		this->price++;
+
+		return *this;
+	}
+
+	//post-incrementation 
+	Appliance operator++(int i)
+	{
+		Appliance copy = *this;
+		this->price++;
+
+		return copy;
+	}
+
+	friend ostream& operator<<(ostream&, Appliance);
+
+	friend istream& operator>>(istream&, Appliance&);
+
+
+};
+
+ostream& operator<<(ostream& out, Appliance a)
+{
+	out << a.ID << " " << a.name << " " << a.manufacturer << '\n';
+	out << "Price: " << a.price << " euro";
+
+	return out;
+}
+
+istream& operator>>(istream& in, Appliance& c)
+{
+	cout << "Chance the price for Appliance with ID " << c.ID << ": ";
+	float newPrice;
+	in >> newPrice;
+	c.setPrice(newPrice);
+
+	return in;
+}
+
+int Appliance::salePercentage = 0;
+
+
+int main()
+{
+	float p1[]{ 120,170,147,210,100 }, p2[]{ 600, 650, 550 };
+	float p3[]{ 1200,1000 };
+
+	Appliance a1("AWNH22551FV", "Fridge", "LG", 550, 3, p2);
+	Appliance a2("16GVFHB897G", "Toaster", "Philips", 100, 5, p1);
+
+	Appliance a3 = a1;
+	a3 = a2;
+
+	cout << a1 << '\n' << a3 << '\n';
+	cin >> a3;
+	cout << '\n' << a3;
+}
