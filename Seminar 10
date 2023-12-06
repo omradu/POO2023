@@ -1,0 +1,255 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Electrocasnic
+{
+	const string ID;
+	string nume;
+	string producator;
+	float pret;
+	int nrLuniInMagazin;
+	float* pretPeLuna;
+
+	static int procentReducere;
+
+public:
+	Electrocasnic() : ID("12345ABC")
+	{
+		this->nume = "";
+		this->producator = "";
+		this->pret = 0;
+		this->nrLuniInMagazin = 0;
+		this->pretPeLuna = nullptr;
+	}
+
+	Electrocasnic(string ID, string nume, string producator, float pret, int nrLuniInMagazin, float* pretPeLuna) : ID(ID)
+	{
+		this->nume = nume;
+		this->producator = producator;
+		this->pret = pret;
+		this->nrLuniInMagazin = nrLuniInMagazin;
+		if (pretPeLuna != nullptr)
+		{
+			this->pretPeLuna = new float[this->nrLuniInMagazin];
+			for (int i = 0; i < this->nrLuniInMagazin; i++)
+			{
+				this->pretPeLuna[i] = pretPeLuna[i];
+			}
+		}
+		else
+		{
+			this->pretPeLuna = nullptr;
+		}
+	}
+
+	Electrocasnic(const Electrocasnic& e) : ID(e.ID)
+	{
+		this->nume = e.nume;
+		this->producator = e.producator;
+		this->pret = e.pret;
+		this->nrLuniInMagazin = e.nrLuniInMagazin;
+		if (e.pretPeLuna != nullptr)
+		{
+			this->pretPeLuna = new float[this->nrLuniInMagazin];
+			for (int i = 0; i < this->nrLuniInMagazin; i++)
+			{
+				this->pretPeLuna[i] = e.pretPeLuna[i];
+			}
+		}
+		else
+		{
+			this->pretPeLuna = nullptr;
+		}
+	}
+
+	~Electrocasnic()
+	{
+		if (this->pretPeLuna != nullptr)
+		{
+			delete[] this->pretPeLuna;
+		}
+	}
+
+	// Getters
+	string getID()
+	{
+		return this->ID;
+	}
+
+	string getNume()
+	{
+		return this->nume;
+	}
+
+	string getProducator()
+	{
+		return this->producator;
+	}
+
+	float getPret()
+	{
+		return this->pret;
+	}
+
+	int getNrLuniInMagazin()
+	{
+		return this->nrLuniInMagazin;
+	}
+
+	float* getPretPeLuna()
+	{
+		float* copie;
+		if (this->pretPeLuna != nullptr)
+		{
+			copie = new float[this->nrLuniInMagazin];
+			for (int i = 0; i < this->nrLuniInMagazin; i++)
+			{
+				copie[i] = this->pretPeLuna[i];
+			}
+		}
+		else
+		{
+			copie = nullptr;
+		}
+
+		return copie;
+	}
+
+	static int getProcentajReducere()
+	{
+		return procentReducere;
+	}
+
+	//Setters
+	void setNume(string nume)
+	{
+		this->nume = nume;
+	}
+
+	void setProducator(string productor)
+	{
+		this->producator = producator;
+	}
+
+	void setPret(float pret)
+	{
+		if (pret > 0)
+		{
+			this->pret = pret;
+		}
+	}
+
+	void setNrLuniInMagazin(int nrLuni)
+	{
+		this->nrLuniInMagazin = nrLuni;
+	}
+
+	void setPretPeLuna(int nrLuni, float* pretPeLuna)
+	{
+		if (this->pretPeLuna != nullptr)
+		{
+			delete[] this->pretPeLuna;
+		}
+
+		this->nrLuniInMagazin = nrLuni;
+
+		if (pretPeLuna != nullptr)
+		{
+			
+			this->pretPeLuna = new float[this->nrLuniInMagazin];
+			for (int i = 0; i < this->nrLuniInMagazin; i++)
+			{
+				this->pretPeLuna[i] = pretPeLuna[i];
+			}
+		}
+		else
+		{
+			this->pretPeLuna = nullptr;
+		}
+	}
+
+	void setSalePercentage(int procentReducere)
+	{
+		Electrocasnic::procentReducere = procentReducere;
+	}
+
+	//supraincarcare operator =
+	Electrocasnic& operator=(const Electrocasnic& e)
+	{
+		if (this != &e)
+		{
+			this->nume = e.nume;
+			this->producator = e.producator;
+			this->pret = e.pret;
+			this->nrLuniInMagazin = e.nrLuniInMagazin;
+			if (this->pretPeLuna != nullptr)
+			{
+				delete[] this->pretPeLuna;
+			}
+			
+			if (e.pretPeLuna != nullptr)
+			{
+				this->pretPeLuna = new float[this->nrLuniInMagazin];
+				for (int i = 0; i < this->nrLuniInMagazin; i++)
+				{
+					this->pretPeLuna[i] = e.pretPeLuna[i];
+				}
+			}
+			else
+			{
+				this->pretPeLuna = nullptr;
+			}
+		}
+		return *this;
+	}
+
+	//verificam daca pretul e mai mare de 200
+	bool operator!()
+	{
+		return this->pret > 200;
+	}
+
+	//pre-incrementare
+	Electrocasnic& operator++()
+	{
+		this->pret++;
+
+		return *this;
+	}
+
+	//post-incrementare
+	Electrocasnic operator++(int i)
+	{
+		Electrocasnic copie = *this;
+		this->pret++;
+
+		return copie;
+	}
+
+	friend ostream& operator<<(ostream&, Electrocasnic);
+
+	friend istream& operator>>(istream&, Electrocasnic&);
+
+
+};
+
+ostream& operator<<(ostream& out, Electrocasnic e)
+{
+	out << e.ID << " " << e.nume << " " << e.producator << '\n';
+	out << "pret: " << e.pret << " euro";
+
+	return out;
+}
+
+istream& operator>>(istream& in, Electrocasnic& c)
+{
+	cout << "Schimba pretul pt electrocasnicul cu ID ul " << c.ID << ": ";
+	float pretNou;
+	in >> pretNou;
+	c.setPret(pretNou);
+
+	return in;
+}
+
+int Electrocasnic::procentReducere = 0;
